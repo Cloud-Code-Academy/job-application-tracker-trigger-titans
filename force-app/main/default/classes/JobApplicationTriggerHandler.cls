@@ -13,4 +13,10 @@ public with sharing class JobApplicationTriggerHandler extends TriggerHandler {
     public override void beforeUpdate() {
         JobApplicationTriggerHelper.setPrimaryContact(Trigger.new);
     }
+
+    public override void afterUpdate() {
+        JobApplicationTriggerHelper.createTasksForApplications(Trigger.oldMap, Trigger.new);
+    }
+
+
 }
