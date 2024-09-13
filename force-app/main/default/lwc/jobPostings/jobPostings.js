@@ -7,13 +7,13 @@ export default class JobPostings extends LightningElement {
     @track jobPostings = [];
     @track error;
     @track selectedJobs = [];
-    @track isLoading = false; // Add isLoading property
+    @track isLoading = false; 
 
     columns = [
         { label: 'Company', fieldName: 'company' },
         { label: 'Title', fieldName: 'title' },
         { label: 'Location', fieldName: 'location' },
-        { label: 'Salary Range', fieldName: 'salaryRange' }, // Add Salary Range field
+        { label: 'Salary Range', fieldName: 'salaryRange' }, 
         { label: 'Description', fieldName: 'description' },
         { label: 'URL', fieldName: 'url', type: 'url', typeAttributes: { label: { fieldName: 'url' }, target: '_blank' } }
     ];
@@ -23,27 +23,27 @@ export default class JobPostings extends LightningElement {
     }
 
     fetchJobPostings() {
-        this.isLoading = true; // Show spinner
-        this.error = null; // Clear previous errors
+        this.isLoading = true; 
+        this.error = null; 
         getNewJobPostings()
             .then(result => {
                 if (result.length === 0) {
                     this.error = 'No job postings found.';
-                    this.jobPostings = []; // Clear previous postings
+                    this.jobPostings = []; 
                 } else {
                     this.jobPostings = result.map(job => ({
                         ...job,
-                        url: job.url // Ensure URL field is available for the datatable
+                        url: job.url
                     }));
-                    this.error = null; // Clear error if data is fetched
+                    this.error = null;
                 }
-                this.isLoading = false; // Hide spinner
+                this.isLoading = false; 
             })
             .catch(error => {
                 this.error = 'An error occurred while retrieving job postings.';
                 console.error('Error fetching job postings:', error);
-                this.isLoading = false; // Hide spinner
-                this.jobPostings = []; // Ensure no previous postings are shown
+                this.isLoading = false; 
+                this.jobPostings = []; 
             });
     }
 
