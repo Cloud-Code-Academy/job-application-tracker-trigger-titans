@@ -64,8 +64,49 @@ global class JoobleCallout {
     @AuraEnabled
     public static void saveSelectedJobs(List<JobPostingWrapper> jobs) {
         List<Job_Application__c> jobApplications = new List<Job_Application__c>();
+        List<Account> accountsToInsert = new List<Account>();
+        Map<String, Account> accountMap = new Map<String, Account>();   
+        Set<String> companyNames = new Set<String>();
 
         for (JobPostingWrapper job : jobs) {
+            if (job.company != null) {
+                companyNames.add(job.company.toLowerCase()); 
+            }
+        }
+ 
+        if (!companyNames.isEmpty()) {
+            List<Account> existingAccounts = [
+                SELECT Id, Name 
+                FROM Account 
+                WHERE Name IN :companyNames
+            ];
+
+            for (Account acc : existingAccounts) {
+                accountMap.put(acc.Name.toLowerCase(), acc); 
+            }
+        }
+
+        for (JobPostingWrapper job : jobs) {
+            String normalizedCompanyName = job.company != null ? job.company.toLowerCase() : '';
+    
+            if (!accountMap.containsKey(normalizedCompanyName)) {
+                Account newAccount = new Account();
+                newAccount.Name = job.company;
+                accountsToInsert.add(newAccount); 
+    
+                accountMap.put(normalizedCompanyName, newAccount);
+            }
+        }
+        insert accountsToInsert;
+
+        for (Account newAcc : accountsToInsert) {
+            accountMap.put(newAcc.Name.toLowerCase(), newAcc); 
+        }
+
+        for (JobPostingWrapper job : jobs) {
+            String normalizedCompanyName = job.company != null ? job.company.toLowerCase() : '';
+            Account linkedAccount = accountMap.get(normalizedCompanyName);
+    
             Job_Application__c newJobApplication = new Job_Application__c();
             newJobApplication.Company_Text__c = job.company;
             newJobApplication.Position_Title__c = job.title;
@@ -75,13 +116,15 @@ global class JoobleCallout {
             newJobApplication.Name = job.title + ' - ' + job.company;
             newJobApplication.Salary_Range__c = job.salaryRange;
 
+            if (linkedAccount != null) {
+                newJobApplication.Company__c = linkedAccount.Id;
+            }
+    
             jobApplications.add(newJobApplication);
         }
-
-        try {
-            if (!jobApplications.isEmpty()) {
+    
+        try {   
                 insert jobApplications;
-            }
         } catch (Exception e) {
             throw new AuraHandledException('Error saving job applications: ' + e.getMessage());
         }
@@ -92,7 +135,6 @@ global class JoobleCallout {
             return input; 
         }
         String output = input.replaceAll('<.*?>', '');
-    
         output = output.replace('&nbsp;', ''); 
         output = output.replace('&amp;', '&'); 
         output = output.replace('&lt;', '<');  
