@@ -2,11 +2,16 @@ public class InterviewReminderEmailScheduler implements Schedulable {
     
     // This method will be executed when the scheduled job runs
     public void execute(SchedulableContext sc) {
-        // Query events (interviews) that are scheduled for tomorrow
+        // Calculate the start and end of the next day
+        DateTime startOfNextDay = DateTime.newInstance(Date.today().addDays(1), Time.newInstance(0, 0, 0, 0));
+        DateTime endOfNextDay = DateTime.newInstance(Date.today().addDays(2), Time.newInstance(0, 0, 0, 0)).addSeconds(-1);
+        
+        // Query events (interviews) that are scheduled for the next day
         List<Event> upcomingInterviews = [
             SELECT Id, Subject, StartDateTime, WhoId, WhatId, Location, Description
             FROM Event 
-            WHERE StartDateTime = :DateTime.now().addDays(1) 
+            WHERE StartDateTime >= :startOfNextDay 
+                  AND StartDateTime <= :endOfNextDay
                   AND RecordType.Name = 'Interview'
         ];
         
