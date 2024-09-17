@@ -36,14 +36,6 @@ private class InterviewReminderEmailSchedulerTest {
             AccountId = testAccount.Id
         );
         insert testContact;
-        
-        // Create a Record Type for Interview events
-        RecordType interviewRecordType = new RecordType(
-            Name = 'Interview',
-            SObjectType = 'Event',
-            IsActive = true
-        );
-        insert interviewRecordType;
     }
 
     @isTest
