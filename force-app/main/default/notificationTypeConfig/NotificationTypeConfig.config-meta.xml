@@ -159,41 +159,6 @@
             <desktopEnabled>true</desktopEnabled>
             <mobileEnabled>false</mobileEnabled>
         </notificationChannels>
-        <notificationType>learning_item_completion</notificationType>
-    </notificationTypeSettings>
-    <notificationTypeSettings>
-        <notificationChannels>
-            <desktopEnabled>true</desktopEnabled>
-            <mobileEnabled>false</mobileEnabled>
-        </notificationChannels>
-        <notificationType>learning_item_due</notificationType>
-    </notificationTypeSettings>
-    <notificationTypeSettings>
-        <notificationChannels>
-            <desktopEnabled>true</desktopEnabled>
-            <mobileEnabled>false</mobileEnabled>
-        </notificationChannels>
-        <notificationType>learning_item_milestone_due</notificationType>
-    </notificationTypeSettings>
-    <notificationTypeSettings>
-        <notificationChannels>
-            <desktopEnabled>true</desktopEnabled>
-            <mobileEnabled>false</mobileEnabled>
-        </notificationChannels>
-        <notificationType>learning_item_not_started</notificationType>
-    </notificationTypeSettings>
-    <notificationTypeSettings>
-        <notificationChannels>
-            <desktopEnabled>true</desktopEnabled>
-            <mobileEnabled>false</mobileEnabled>
-        </notificationChannels>
-        <notificationType>learning_item_start</notificationType>
-    </notificationTypeSettings>
-    <notificationTypeSettings>
-        <notificationChannels>
-            <desktopEnabled>true</desktopEnabled>
-            <mobileEnabled>false</mobileEnabled>
-        </notificationChannels>
         <notificationType>mailapp_alert</notificationType>
     </notificationTypeSettings>
     <notificationTypeSettings>
@@ -300,12 +265,5 @@
             <mobileEnabled>true</mobileEnabled>
         </notificationChannels>
         <notificationType>wave_condition</notificationType>
-    </notificationTypeSettings>
-    <notificationTypeSettings>
-        <notificationChannels>
-            <desktopEnabled>true</desktopEnabled>
-            <mobileEnabled>false</mobileEnabled>
-        </notificationChannels>
-        <notificationType>enablement_coaching_feedback_ready</notificationType>
     </notificationTypeSettings>
 </NotificationTypeConfig>
