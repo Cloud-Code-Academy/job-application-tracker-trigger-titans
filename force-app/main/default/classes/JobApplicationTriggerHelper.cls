@@ -35,6 +35,55 @@ public with sharing class JobApplicationTriggerHelper {
         }
     }
 
+    public static void calculateTaxLiabilities(List<Job_Application__c> jobApplications) {
+        // Retrieve Social Security and Medicare tax rates from custom metadata
+        Map<String, Tax_Settings__mdt> taxSettingsMap = new Map<String, Tax_Settings__mdt>([
+            SELECT MasterLabel, Tax_Rate__c 
+            FROM Tax_Settings__mdt 
+            WHERE MasterLabel IN ('Social Security', 'Medicare')
+        ]);
+
+        // Default to 6.2% for Social Security and 1.45% for Medicare if metadata not found
+        Decimal socialSecurityTaxRate = taxSettingsMap.containsKey('Social Security') ? taxSettingsMap.get('Social Security').Tax_Rate__c : 6.20;
+        Decimal medicareTaxRate = taxSettingsMap.containsKey('Medicare') ? taxSettingsMap.get('Medicare').Tax_Rate__c : 1.45;
+
+        // Retrieve all tax bracket metadata entries
+        List<Tax_Brackets__mdt> taxBrackets = [SELECT Earning_Minimum__c, Earning_Maximum__c, Tax_Rate__c FROM Tax_Brackets__mdt ORDER BY Earning_Minimum__c ASC];
+
+        for (Job_Application__c application : jobApplications) {
+            Decimal annualSalary = application.Salary__c != null ? application.Salary__c : 0;
+            Decimal federalIncomeTax = 0;
+
+            // Find the appropriate tax bracket for the given annual salary
+            for (Tax_Brackets__mdt bracket : taxBrackets) {
+                if (annualSalary >= bracket.Earning_Minimum__c && annualSalary <= bracket.Earning_Maximum__c) {
+                    // Calculate the federal income tax based on the bracket's tax rate
+                    federalIncomeTax = annualSalary * (bracket.Tax_Rate__c / 100);
+                    break; 
+                }
+            }
+
+            application.Federal_Income_Tax_Amount__c = federalIncomeTax;
+
+            // Social Security Tax Calculation
+            Decimal socialSecurityTax = (annualSalary * socialSecurityTaxRate) / 100;
+            application.Social_Security_Tax_Amount__c = socialSecurityTax;
+
+            // Medicare Tax Calculation
+            Decimal medicareTax = (annualSalary * medicareTaxRate) / 100;
+            application.Medicare_Tax_Amount__c = medicareTax;
+
+            // Total Tax Calculation
+            Decimal totalTax = federalIncomeTax + socialSecurityTax + medicareTax;
+            application.Total_Tax_Amount__c = totalTax;
+
+            // Yearly and Monthly Take-home Pay Calculations
+            Decimal yearlyTakeHomePay = annualSalary - totalTax;
+            application.Yearly_Take_Home_Pay__c = yearlyTakeHomePay;
+            application.Monthly_Take_Home_Pay__c = yearlyTakeHomePay / 12;
+        }
+    }
+
     //Author: Jodi Eagan
     public static void createTasksForApplications(Map<Id, Job_Application__c> oldMap, List<Job_Application__c> applications) {
         List<Task> taskList = new List<Task>();
