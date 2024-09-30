@@ -85,12 +85,18 @@ public with sharing class JobApplicationTriggerHelper {
     }
 
     //Author: Jodi Eagan
-    public static void createTasksForApplications(Map<Id, Job_Application__c> oldMap, List<Job_Application__c> applications) {
+    public static void createTasksForApplications(Map<Id, Job_Application__c> oldMap, List<Job_Application__c> applications, Boolean isInsert) {
         List<Task> taskList = new List<Task>();
         
         for(Job_Application__c application : applications) {
-            if(application.Status__c != oldMap.get(application.Id).Status__c) {
-                taskList.addAll(createTasks(application));
+            if (isInsert) {
+                if (application.Status__c == 'Saved') {
+                    taskList.addAll(createTasks(application));
+                }
+            } else {
+                if (oldMap.containsKey(application.Id) && application.Status__c != oldMap.get(application.Id).Status__c) {
+                    taskList.addAll(createTasks(application));
+                }
             }
         }
         
