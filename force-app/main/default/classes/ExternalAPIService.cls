@@ -4,13 +4,19 @@ public with sharing class ExternalAPIService {
         // Set up the HTTP request
         Http http = new Http();
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('callout:OpenAI');
+        request.setEndpoint('callout:OpenAI/v1/chat/completions');
         request.setMethod('POST');
-        request.setHeader('Content-Type', 'application/json');
         
         if (body != null) {
             request.setBody(body);
         }
+
+        System.debug('--- API Request Details ---');
+        System.debug('Endpoint: ' + request.getEndpoint());
+        System.debug('Method: ' + request.getMethod());
+        System.debug('Headers:' + request.getHeader('Authorization'));
+        System.debug('Body: ' + request.getBody());
+        System.debug('---------------------------');
 
         // Send the request and get the response
         HttpResponse response = http.send(request);
