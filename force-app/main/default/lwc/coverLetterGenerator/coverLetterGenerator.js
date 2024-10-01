@@ -6,6 +6,7 @@ import COMPANY_FIELD from '@salesforce/schema/Job_Application__c.Company__c';
 import POSITION_FIELD from '@salesforce/schema/Job_Application__c.Position_Title__c';
 import DESCRIPTION_FIELD from '@salesforce/schema/Job_Application__c.Description__c';
 import ACCOUNT_NAME_FIELD from '@salesforce/schema/Account.Name';
+import callOpenAIApi from '@salesforce/apex/ExternalApiService.callOpenAIApi';
 
 // Fields to retrieve from the Job Application record
 const FIELDS = [
@@ -61,7 +62,7 @@ export default class JobApplicationCoverLetter extends LightningElement {
                 temperature: 0.7
             };
 
-            const response = await this.fetchFromOpenAI(requestBody);
+            const response = await callOpenAIApi({ body: requestBody });
             this.coverLetter = response.choices[0].message.content.trim(); // Set the cover letter
             this.showNotification('Success', 'Cover letter generated successfully', 'success');
         } catch (error) {
@@ -74,7 +75,6 @@ export default class JobApplicationCoverLetter extends LightningElement {
 
     // Method to make the OpenAI API callout
     async fetchFromOpenAI(requestBody) {
-        const apiKey = ''; // Replace with your OpenAI API Key
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
