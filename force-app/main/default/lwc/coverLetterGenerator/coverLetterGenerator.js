@@ -56,13 +56,14 @@ export default class JobApplicationCoverLetter extends LightningElement {
         this.isLoading = true;
         try {
             const requestBody = {
-                messages: [{"role": "user", "content": `Write a professional cover letter for the following job position:\n\nCompany: ${this.companyName}\nPosition: ${this.positionTitle}\nDescription: ${this.jobDescription}. The tone should be friendly and casual. Please do not include any of the formal cover letter heading contact information like address, phone number, email, etc. Your response should skip all of that and start with the part that addresses the receiver of the letter. My name is ${this.companyName}`}],
+                messages: [{"role": "user", "content": `Write a professional cover letter for the following job position:\n\nCompany: ${this.companyName}\nPosition: ${this.positionTitle}\nDescription: ${this.jobDescription}. The tone should be friendly and casual. Please do not include any of the formal cover letter heading contact information like address, phone number, email, etc. Your response should skip all of that and start with the part that addresses the receiver of the letter. My name is ${this.userName}`}],
                 max_tokens: 500,
-                temperature: 0.7
+                temperature: 0.7,
+                model: "gpt-4o-mini"
             };
 
             const response = await callOpenAIApi({ body: JSON.stringify(requestBody) });
-            this.coverLetter = response.choices[0].message.content.trim(); // Set the cover letter
+            this.coverLetter = JSON.parse(response).choices[0].message.content.trim(); // Set the cover letter
             this.showNotification('Success', 'Cover letter generated successfully', 'success');
         } catch (error) {
             console.error('Error generating cover letter: ', error);
