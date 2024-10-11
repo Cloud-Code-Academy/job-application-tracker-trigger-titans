@@ -20,6 +20,13 @@ public class JobApplicationTriggerHelperTest {
             applications.add(application);
         }
         insert applications;
+
+        // Create test contacts
+        List<Contact> testContacts = new List<Contact>();
+        for (Account acc : testAccounts) {
+            testContacts.add(new Contact(LastName = 'Test Contact', AccountId = acc.Id));
+        }
+        insert testContacts;
     }
 
     @isTest
@@ -146,5 +153,63 @@ public class JobApplicationTriggerHelperTest {
         System.assertEquals(0, tasks.size(), 'No tasks should be created for null status');
     }
 
-    
+    @isTest
+    static void testSetPrimaryContactPositive() {
+        // Positive test: Job Applications with Companies should get Primary Contacts set
+        List<Account> testAccounts = [SELECT Id FROM Account];
+        List<Job_Application__c> jobApps = new List<Job_Application__c>();
+        
+        for (Account acc : testAccounts) {
+            jobApps.add(new Job_Application__c(Company__c = acc.Id));
+        }
+        
+        Test.startTest();
+        insert jobApps;
+        Test.stopTest();
+        
+        // Verify results
+        List<Job_Application__c> updatedJobApps = [SELECT Id, Company__c, Primary_Contact__c FROM Job_Application__c];
+        System.assertEquals(testAccounts.size(), updatedJobApps.size(), 'All job applications should be inserted');
+        
+        for (Job_Application__c app : updatedJobApps) {
+            System.assertNotEquals(null, app.Primary_Contact__c, 'Primary Contact should be set for each Job Application');
+        }
+    }
+
+    @isTest
+    static void testSetPrimaryContactNegative() {
+        // Negative test: Job Application without Company should not get Primary Contact set
+        Job_Application__c jobApp = new Job_Application__c();
+        
+        Test.startTest();
+        insert jobApp;
+        Test.stopTest();
+        
+        // Verify results
+        Job_Application__c updatedJobApp = [SELECT Id, Company__c, Primary_Contact__c FROM Job_Application__c WHERE Id = :jobApp.Id];
+        System.assertEquals(null, updatedJobApp.Primary_Contact__c, 'Primary Contact should not be set for Job Application without Company');
+    }
+
+    @isTest
+    static void testSetPrimaryContactBulk() {
+        // Bulk test: Test with more than 200 records
+        List<Account> testAccounts = [SELECT Id FROM Account];
+        List<Job_Application__c> jobApps = new List<Job_Application__c>();
+        
+        for (Integer i = 0; i < 201; i++) {
+            jobApps.add(new Job_Application__c(Company__c = testAccounts[Math.mod(i, testAccounts.size())].Id));
+        }
+        
+        Test.startTest();
+        insert jobApps;
+        Test.stopTest();
+        
+        // Verify results
+        List<Job_Application__c> updatedJobApps = [SELECT Id, Company__c, Primary_Contact__c FROM Job_Application__c];
+        System.assertEquals(201, updatedJobApps.size(), 'All 201 job applications should be inserted');
+        
+        for (Job_Application__c app : updatedJobApps) {
+            System.assertNotEquals(null, app.Primary_Contact__c, 'Primary Contact should be set for each Job Application in bulk operation');
+        }
+    }
 }
