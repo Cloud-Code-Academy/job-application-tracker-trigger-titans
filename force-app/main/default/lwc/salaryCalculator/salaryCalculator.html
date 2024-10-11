@@ -1,0 +1,68 @@
+<template>
+  <div class="salary-calculator slds-card">
+      <div class="slds-card__body slds-card__body_inner">
+          <div class="slds-text-heading_medium slds-m-bottom_medium">
+              Your take-home pay will be
+              <div class="slds-text-heading_large slds-text-color_success">{calculations.takeHome}</div>
+          </div>
+
+          <lightning-input
+              type="number"
+              label="Annual Salary"
+              value={salary}
+              onchange={handleSalaryChange}
+          ></lightning-input>
+          <div class="slds-text-body_small slds-m-top_x-small">
+              Entered salary: {formattedSalary}
+          </div>
+
+          <div class="slds-m-top_medium">
+              <h3 class="slds-text-heading_small slds-m-bottom_x-small">Deductions</h3>
+              <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                  <tbody>
+                      <tr>
+                          <td>Federal Tax</td>
+                          <td class="slds-text-align_right slds-text-color_error">{calculations.federalTax}</td>
+                      </tr>
+                      <tr>
+                          <td>Medicare</td>
+                          <td class="slds-text-align_right slds-text-color_error">{calculations.medicare}</td>
+                      </tr>
+                      <tr>
+                          <td>Social Security</td>
+                          <td class="slds-text-align_right slds-text-color_error">{calculations.socialSecurity}</td>
+                      </tr>
+                      <tr class="slds-text-title_bold">
+                          <td>Take Home Pay</td>
+                          <td class="slds-text-align_right">{calculations.takeHome}</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+
+          <div class="slds-m-top_medium slds-m-bottom_large">
+              <h3 class="slds-text-heading_small slds-m-bottom_x-small">Take Home Pay Intervals</h3>
+              <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                  <tbody>
+                      <tr>
+                          <td>Yearly</td>
+                          <td class="slds-text-align_right">{calculations.yearly}</td>
+                      </tr>
+                      <tr>
+                          <td>Six Months</td>
+                          <td class="slds-text-align_right">{calculations.sixMonths}</td>
+                      </tr>
+                      <tr>
+                          <td>Monthly</td>
+                          <td class="slds-text-align_right">{calculations.monthly}</td>
+                      </tr>
+                      <tr>
+                          <td>Bi-Weekly</td>
+                          <td class="slds-text-align_right">{calculations.biWeekly}</td>
+                      </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+</template>
