@@ -1,0 +1,7 @@
+.textAreaBody {
+  --sds-c-textarea-sizing-min-height:175px;
+}
+
+.textAreaBody--large {
+  --sds-c-textarea-sizing-min-height:350px;
+}
